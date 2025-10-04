@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './AnalysisView.css';
 
 const AnalysisView = ({ document }) => {
     const [analysis, setAnalysis] = useState(null);

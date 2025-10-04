@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './DocumentUpload.css';
 
 const DocumentUpload = ({ onUploadSuccess }) => {
     const [file, setFile] = useState(null);
@@ -33,11 +34,13 @@ const DocumentUpload = ({ onUploadSuccess }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h2>Upload Document</h2>
-            <input type="file" onChange={handleFileChange} />
-            <button type="submit">Upload</button>
-        </form>
+        <div className="document-upload-container">
+            <form className="document-upload-form" onSubmit={handleSubmit}>
+                <h2>Upload Document</h2>
+                <input type="file" onChange={handleFileChange} />
+                <button type="submit">Upload</button>
+            </form>
+        </div>
     );
 };
 

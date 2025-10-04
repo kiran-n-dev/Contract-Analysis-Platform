@@ -1,0 +1,40 @@
+.header {
+    background-color: #1f1f1f;
+    padding: 15px 20px;
+    border-bottom: 1px solid #333333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-title {
+    color: #bb86fc;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.header-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.header-nav li {
+    margin-left: 20px;
+}
+
+.header-nav a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+
+.header-nav a:hover {
+    color: #bb86fc;
+}
+
+.header-auth-buttons button {
+    margin-left: 10px;
+}

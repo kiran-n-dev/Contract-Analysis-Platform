@@ -1,56 +1,34 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Header from './components/Layout/Header';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import Dashboard from './components/Dashboard/Dashboard';
 import DocumentUpload from './components/Upload/DocumentUpload';
-import Header from './components/Layout/Header';
+import AnalysisView from './components/Analysis/AnalysisView';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
-const PrivateRoute = ({ children, ...rest }) => {
-  const { isAuthenticated } = useAuth();
-  return (
-    <Route
-      {...rest}
-      render={({ location }) =>
-        isAuthenticated ? (
-          children
-        ) : (
-          <Redirect
-            to={{
-              pathname: "/login",
-              state: { from: location }
-            }}
-          />
-        )
-      }
-    />
-  );
+const PrivateRoute = ({ element }) => {
+    const { isAuthenticated } = useAuth();
+    return isAuthenticated ? element : <Navigate to="/login" />;
 };
 
 function App() {
-  return (
-    <Router>
-      <AuthProvider>
-        <Header />
-        <Switch>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/register">
-            <Register />
-          </Route>
-          <PrivateRoute path="/dashboard">
-            <DocumentUpload />
-            <Dashboard />
-          </PrivateRoute>
-          <Route path="/">
-            <Redirect to="/dashboard" />
-          </Route>
-        </Switch>
-      </AuthProvider>
-    </Router>
-  );
+    return (
+        <AuthProvider>
+            <Router>
+                <Header />
+                <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/dashboard" element={<PrivateRoute element={<Dashboard />} />} />
+                    <Route path="/upload" element={<PrivateRoute element={<DocumentUpload />} />} />
+                    <Route path="/documents/:id" element={<PrivateRoute element={<AnalysisView />} />} />
+                    <Route path="/" element={<Navigate to="/dashboard" />} />
+                </Routes>
+            </Router>
+        </AuthProvider>
+    );
 }
 
 export default App;

@@ -1,35 +1,42 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-export const AuthContext = createContext(null);
-
-export const useAuth = () => {
-    return useContext(AuthContext);
-};
+const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Check for a token or session in localStorage/sessionStorage
         const storedUser = localStorage.getItem('user');
-        return !!storedUser;
-    });
-    const [user, setUser] = useState(() => {
-        const storedUser = localStorage.getItem('user');
-        return storedUser ? JSON.parse(storedUser) : null;
-    });
-    const history = useHistory();
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+            setIsAuthenticated(true);
+        }
+    }, []);
 
     const login = (userData) => {
-        localStorage.setItem('user', JSON.stringify(userData));
         setUser(userData);
         setIsAuthenticated(true);
-        history.push('/dashboard');
+        localStorage.setItem('user', JSON.stringify(userData));
     };
 
-    const logout = () => {
-        localStorage.removeItem('user');
-        setUser(null);
-        setIsAuthenticated(false);
-        history.push('/login');
+    const logout = async () => {
+        try {
+            const response = await fetch('/api/auth/logout', { method: 'POST' });
+            if (response.ok) {
+                setUser(null);
+                setIsAuthenticated(false);
+                localStorage.removeItem('user');
+                navigate('/login'); // Redirect to login page after logout
+            } else {
+                console.error('Logout failed');
+            }
+        } catch (error) {
+            console.error('Error during logout:', error);
+        }
     };
 
     return (
@@ -37,4 +44,8 @@ export const AuthProvider = ({ children }) => {
             {children}
         </AuthContext.Provider>
     );
+};
+
+export const useAuth = () => {
+    return useContext(AuthContext);
 };
