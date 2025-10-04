@@ -38,24 +38,25 @@ const AnalysisView = ({ document }) => {
             setLoading(true);
             setError(null);
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/documents/${id}`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/documents/${document.id}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored
                     }
                 });
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
-                    setAnalysis(data);
-                } catch (e) {
-                    setError("Failed to fetch analysis: " + e.message);
-                } finally {
-                    setLoading(false);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-            };
+                const data = await response.json();
+                setAnalysis(data);
+            } catch (e) {
+                setError("Failed to fetch analysis: " + e.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (document && document.id) {
             fetchAnalysis();
         } else {
             setAnalysis(null);
@@ -105,19 +106,19 @@ const AnalysisView = ({ document }) => {
             <div className="tab-content">
                 {activeTab === 'summary' && (
                     <div className="analysis-section-content">
-                        <p>{analysis.summary || 'N/A'}</p>
+                        <p>{analysis.analysis_results[0]?.summary || 'N/A'}</p>
                     </div>
                 )}
 
                 {activeTab === 'key_information' && (
                     <div className="analysis-section-content">
-                        {analysis.key_information ? formatJsonToPoints(analysis.key_information) : 'N/A'}
+                        {analysis.analysis_results[0]?.extracted_info ? formatJsonToPoints(analysis.analysis_results[0].extracted_info) : 'N/A'}
                     </div>
                 )}
 
                 {activeTab === 'risk_assessment' && (
                     <div className="analysis-section-content">
-                        {analysis.risk_assessment ? formatJsonToPoints(analysis.risk_assessment) : 'N/A'}
+                        {analysis.analysis_results[0]?.risks_identified ? formatJsonToPoints(analysis.analysis_results[0].risks_identified) : 'N/A'}
                     </div>
                 )}
             </div>

@@ -55,6 +55,11 @@ def login(form_data: UserCreate, request: Request, response: Response, db: Sessi
     return {"message": "Login successful", "user_id": user.id, "username": user.username}
 
 
+@app.get("/api/auth/me", response_model=User)
+def read_users_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+
 @app.post("/api/auth/logout")
 def logout(request: Request):
     request.session.clear()

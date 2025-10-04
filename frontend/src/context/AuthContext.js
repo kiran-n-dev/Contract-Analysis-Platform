@@ -9,18 +9,44 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Check for a token or session in localStorage/sessionStorage
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-            setIsAuthenticated(true);
-        }
+        const checkAuth = async () => {
+            try {
+                const response = await fetch('/api/auth/me');
+                if (response.ok) {
+                    const userData = await response.json();
+                    setUser(userData);
+                    setIsAuthenticated(true);
+                } else {
+                    setUser(null);
+                    setIsAuthenticated(false);
+                }
+            } catch (error) {
+                console.error('Error checking authentication:', error);
+                setUser(null);
+                setIsAuthenticated(false);
+            }
+        };
+        checkAuth();
     }, []);
 
-    const login = (userData) => {
-        setUser(userData);
-        setIsAuthenticated(true);
-        localStorage.setItem('user', JSON.stringify(userData));
+    const login = async (userData) => {
+        // After successful login, re-check auth status to get full user data from session
+        try {
+            const response = await fetch('/api/auth/me');
+            if (response.ok) {
+                const fetchedUserData = await response.json();
+                setUser(fetchedUserData);
+                setIsAuthenticated(true);
+            } else {
+                console.error('Failed to fetch user data after login');
+                setUser(null);
+                setIsAuthenticated(false);
+            }
+        } catch (error) {
+            console.error('Error fetching user data after login:', error);
+            setUser(null);
+            setIsAuthenticated(false);
+        }
     };
 
     const logout = async () => {
@@ -29,7 +55,6 @@ export const AuthProvider = ({ children }) => {
             if (response.ok) {
                 setUser(null);
                 setIsAuthenticated(false);
-                localStorage.removeItem('user');
                 navigate('/login'); // Redirect to login page after logout
             } else {
                 console.error('Logout failed');
