@@ -15,8 +15,8 @@ const PrivateRoute = ({ element }) => {
 
 function App() {
     return (
-        <AuthProvider>
-            <Router>
+        <Router>
+            <AuthProvider>
                 <Header />
                 <Routes>
                     <Route path="/login" element={<Login />} />
@@ -26,8 +26,8 @@ function App() {
                     <Route path="/documents/:id" element={<PrivateRoute element={<AnalysisView />} />} />
                     <Route path="/" element={<Navigate to="/dashboard" />} />
                 </Routes>
-            </Router>
-        </AuthProvider>
+            </AuthProvider>
+        </Router>
     );
 }
 
