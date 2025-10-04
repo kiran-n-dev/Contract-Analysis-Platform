@@ -34,14 +34,17 @@ const AnalysisView = ({ document }) => {
     const [activeTab, setActiveTab] = useState('summary'); // New state for active tab
 
     useEffect(() => {
-        if (document && document.id) {
-            const fetchAnalysis = async () => {
-                setLoading(true);
-                setError(null);
-                try {
-                    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/documents/${document.id}/analyze`, {
-                        method: 'POST',
-                    });
+        const fetchAnalysis = async () => {
+            setLoading(true);
+            setError(null);
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/documents/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored
+                    }
+                });
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
