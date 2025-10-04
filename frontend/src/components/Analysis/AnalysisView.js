@@ -1,10 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import './AnalysisView.css';
 
+const formatJsonToPoints = (data) => {
+    if (typeof data !== 'object' || data === null) {
+        return <p>{String(data)}</p>;
+    }
+
+    if (Array.isArray(data)) {
+        return (
+            <ul>
+                {data.map((item, index) => (
+                    <li key={index}>{formatJsonToPoints(item)}</li>
+                ))}
+            </ul>
+        );
+    }
+
+    return (
+        <ul>
+            {Object.entries(data).map(([key, value]) => (
+                <li key={key}>
+                    <strong>{key}:</strong> {formatJsonToPoints(value)}
+                </li>
+            ))}
+        </ul>
+    );
+};
+
 const AnalysisView = ({ document }) => {
     const [analysis, setAnalysis] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [activeTab, setActiveTab] = useState('summary'); // New state for active tab
 
     useEffect(() => {
         if (document && document.id) {
@@ -12,7 +39,7 @@ const AnalysisView = ({ document }) => {
                 setLoading(true);
                 setError(null);
                 try {
-                    const response = await fetch(`/api/documents/${document.id}/analyze`, {
+                    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/documents/${document.id}/analyze`, {
                         method: 'POST',
                     });
                     if (!response.ok) {
@@ -51,20 +78,46 @@ const AnalysisView = ({ document }) => {
     return (
         <div className="analysis-view-container">
             <h2>Analysis for {document.filename}</h2>
-            {!analysis ? (
-                <div className="analysis-message">No analysis results found for this document.</div>
-            ) : (
-                <>
-                    <h3>Summary</h3>
-                    <p>{analysis.summary || 'N/A'}</p>
+            <div className="tabs-container">
+                <button
+                    className={`tab-button ${activeTab === 'summary' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('summary')}
+                >
+                    Summary
+                </button>
+                <button
+                    className={`tab-button ${activeTab === 'key_information' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('key_information')}
+                >
+                    Key Information
+                </button>
+                <button
+                    className={`tab-button ${activeTab === 'risk_assessment' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('risk_assessment')}
+                >
+                    Risk Assessment
+                </button>
+            </div>
 
-                    <h3>Key Information</h3>
-                    <pre>{analysis.key_information ? JSON.stringify(analysis.key_information, null, 2) : 'N/A'}</pre>
+            <div className="tab-content">
+                {activeTab === 'summary' && (
+                    <div className="analysis-section-content">
+                        <p>{analysis.summary || 'N/A'}</p>
+                    </div>
+                )}
 
-                    <h3>Risk Assessment</h3>
-                    <pre>{analysis.risk_assessment ? JSON.stringify(analysis.risk_assessment, null, 2) : 'N/A'}</pre>
-                </>
-            )}
+                {activeTab === 'key_information' && (
+                    <div className="analysis-section-content">
+                        {analysis.key_information ? formatJsonToPoints(analysis.key_information) : 'N/A'}
+                    </div>
+                )}
+
+                {activeTab === 'risk_assessment' && (
+                    <div className="analysis-section-content">
+                        {analysis.risk_assessment ? formatJsonToPoints(analysis.risk_assessment) : 'N/A'}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

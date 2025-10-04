@@ -22,13 +22,31 @@
 }
 
 .analysis-view-container p,
-.analysis-view-container pre {
+.analysis-view-container pre,
+.analysis-section-content ul {
     background-color: #333333;
     padding: 15px;
     border-radius: 4px;
     line-height: 1.6;
     white-space: pre-wrap;
     word-break: break-word;
+    list-style: none; /* Remove default bullet points */
+    padding-left: 0; /* Remove default padding */
+}
+
+.analysis-section-content li {
+    margin-bottom: 8px;
+    padding-left: 15px; /* Indent list items */
+    position: relative;
+}
+
+.analysis-section-content li::before {
+    content: '\2022'; /* Add custom bullet point */
+    color: #bb86fc; /* Color for bullet point */
+    font-weight: bold;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
 }
 
 .analysis-message {
@@ -40,4 +58,38 @@
 
 .analysis-message.error {
     color: #ff6b6b;
+}
+
+/* Tabbed Interface Styles */
+.tabs-container {
+    display: flex;
+    border-bottom: 1px solid #333333;
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    transition: background-color 0.3s ease;
+    margin-right: 5px;
+}
+
+.tab-button:hover {
+    background-color: #3a3a3a;
+}
+
+.tab-button.active {
+    background-color: #bb86fc;
+    color: #1f1f1f;
+    font-weight: bold;
+}
+
+.tab-content {
+    padding: 15px 0;
 }
